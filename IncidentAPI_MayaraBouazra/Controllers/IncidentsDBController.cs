@@ -44,7 +44,7 @@ namespace IncidentAPI_X.Controllers
             if (!AllowedSeverities.Contains(incident.Severity))
                 return BadRequest("Invalid severity");
 
-            incident.Status = "OPEN";
+            incident.Status = "IN_PROGRESS";
             incident.CreatedAt = DateTime.UtcNow;
 
             _context.Incidents.Add(incident);
