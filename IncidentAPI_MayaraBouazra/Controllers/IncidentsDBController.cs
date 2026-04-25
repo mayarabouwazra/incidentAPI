@@ -109,5 +109,25 @@ namespace IncidentAPI_X.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("filter-by-status-async")]
+        public async Task<IActionResult> FilterByStatusAsync(string status)
+        {
+            var result = await _context.Incidents
+                .Where(i => i.Status.Contains(status))
+                .ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("filter-by-severity-async")]
+        public async Task<IActionResult> FilterBySeverityAsync(string severity)
+        {
+            var result = await _context.Incidents
+                .Where(i => i.Severity.Contains(severity))
+                .ToListAsync();
+
+            return Ok(result);
+        }
     }
 }
