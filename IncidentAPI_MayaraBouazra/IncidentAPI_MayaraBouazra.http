@@ -1,0 +1,6 @@
+@IncidentAPI_MayaraBouazra_HostAddress = http://localhost:5112
+
+GET {{IncidentAPI_MayaraBouazra_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
