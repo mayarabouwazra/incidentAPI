@@ -129,5 +129,26 @@ namespace IncidentAPI_X.Controllers
 
             return Ok(result);
         }
+
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> PutIncidentStatus(int id, string status)
+        {
+            if (!AllowedStatuses.Contains(status.ToUpper()))
+            {
+                return BadRequest();
+            }
+
+            var incident = await _context.Incidents.FindAsync(id);
+
+            if (incident == null)
+                return NotFound();
+
+            incident.Status = status;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
