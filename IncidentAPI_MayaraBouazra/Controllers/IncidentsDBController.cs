@@ -1,156 +1,113 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IncidentAPI_MayaraBouazra.Models;
 
-namespace IncidentAPI_MayaraBouazra.Controllers
+namespace IncidentAPI_X.Controllers
 {
-    public class IncidentsDBController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class IncidentsDbController : ControllerBase
     {
         private readonly IncidentsDbContext _context;
 
-        public IncidentsDBController(IncidentsDbContext context)
+        private static readonly string[] AllowedSeverities =
+            { "LOW", "MEDIUM", "HIGH", "CRITICAL" };
+
+        private static readonly string[] AllowedStatuses =
+            { "OPEN", "IN_PROGRESS", "RESOLVED" };
+
+        public IncidentsDbController(IncidentsDbContext context)
         {
             _context = context;
         }
 
-        // GET: IncidentsDB
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Incident>>> GetIncidents()
         {
-            return View(await _context.Incidents.ToListAsync());
+            return await _context.Incidents.ToListAsync();
         }
 
-        // GET: IncidentsDB/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var incident = await _context.Incidents
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (incident == null)
-            {
-                return NotFound();
-            }
-
-            return View(incident);
-        }
-
-        // GET: IncidentsDB/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: IncidentsDB/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Severity,Status,CreatedAt")] Incident incident)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(incident);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(incident);
-        }
-
-        // GET: IncidentsDB/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var incident = await _context.Incidents.FindAsync(id);
-            if (incident == null)
-            {
-                return NotFound();
-            }
-            return View(incident);
-        }
-
-        // POST: IncidentsDB/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Severity,Status,CreatedAt")] Incident incident)
-        {
-            if (id != incident.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(incident);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!IncidentExists(incident.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(incident);
-        }
-
-        // GET: IncidentsDB/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var incident = await _context.Incidents
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (incident == null)
-            {
-                return NotFound();
-            }
-
-            return View(incident);
-        }
-
-        // POST: IncidentsDB/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Incident>> GetIncident(int id)
         {
             var incident = await _context.Incidents.FindAsync(id);
-            if (incident != null)
-            {
-                _context.Incidents.Remove(incident);
-            }
+
+            if (incident == null)
+                return NotFound();
+
+            return incident;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Incident>> PostIncident(Incident incident)
+        {
+            if (!AllowedSeverities.Contains(incident.Severity))
+                return BadRequest("Invalid severity");
+
+            incident.Status = "OPEN";
+            incident.CreatedAt = DateTime.UtcNow;
+
+            _context.Incidents.Add(incident);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetIncident), new { id = incident.Id }, incident);
+        }
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutIncident(int id, string status)
+        {
+            var incident = await _context.Incidents.FindAsync(id);
+
+            if (incident == null)
+                return NotFound();
+
+            if (!AllowedStatuses.Contains(status))
+                return BadRequest("Invalid status");
+
+            incident.Status = status;
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
-        private bool IncidentExists(int id)
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteIncident(int id)
         {
-            return _context.Incidents.Any(e => e.Id == id);
+            var incident = await _context.Incidents.FindAsync(id);
+
+            if (incident == null)
+                return NotFound();
+
+            if (incident.Severity == "CRITICAL" && incident.Status == "OPEN")
+                return BadRequest("Cannot delete OPEN CRITICAL incident");
+
+            _context.Incidents.Remove(incident);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+        [HttpGet("filter-by-status")]
+        public IActionResult FilterByStatus(string status)
+        {
+            var result = _context.Incidents
+                .Where(i => i.Status.Contains(status))
+                .ToList();
+
+            return Ok(result);
+        }
+
+        [HttpGet("filter-by-severity")]
+        public IActionResult FilterBySeverity(string severity)
+        {
+            var result = _context.Incidents
+                .Where(i => i.Severity.Contains(severity))
+                .ToList();
+
+            return Ok(result);
         }
     }
 }
