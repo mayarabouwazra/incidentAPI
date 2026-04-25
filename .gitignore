@@ -3,3 +3,6 @@ obj/
 *.user
 *.Development.json
 .vs/
+*.user
+*.suo
+*.log
