@@ -73,6 +73,7 @@ namespace AppTest
             var incident = new Incident
             {
                 Title = "NewIncident",
+                Severity = "HIGH",
                 Status = "OPEN"
             };
 
@@ -103,9 +104,10 @@ namespace AppTest
         {
             var context = GetDbContext();
             var controller = new IncidentsDbController(context);
-            var incident = new Incident { Id = 2, Title = "Test" };
-            var result = await controller.PutIncident(1, incident.Status);
-            Assert.IsType<BadRequestResult>(result);
+
+            var result = await controller.PutIncident(1, "RESOLVED");
+
+            Assert.IsType<NotFoundResult>(result);
         }
         [Fact]
         public async Task DeleteIncident_ExistingId_RemovesIncident()
@@ -158,10 +160,10 @@ namespace AppTest
         }
 
         [Theory]
-        [InlineData("Low")]
-        [InlineData("Medium")]
-        [InlineData("High")]
-        [InlineData("Critical")]
+        [InlineData("LOW")]
+        [InlineData("MEDIUM")]
+        [InlineData("HIGH")]
+        [InlineData("CRITICAL")]
         public async Task PostIncident_ValidSeverity_ReturnsCreated(string severity)
         {
             var context = GetDbContext();
