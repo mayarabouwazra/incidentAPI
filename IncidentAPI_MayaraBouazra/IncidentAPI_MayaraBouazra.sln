@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IncidentAPI_MayaraBouazra", "IncidentAPI_MayaraBouazra.csproj", "{CCFF3E8A-8B88-499D-B9B3-5A1F3AC7803D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppTest", "..\AppTest\AppTest.csproj", "{A5BB7BA2-0CB7-458C-9D0F-74D07938AF87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{CCFF3E8A-8B88-499D-B9B3-5A1F3AC7803D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCFF3E8A-8B88-499D-B9B3-5A1F3AC7803D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCFF3E8A-8B88-499D-B9B3-5A1F3AC7803D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5BB7BA2-0CB7-458C-9D0F-74D07938AF87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5BB7BA2-0CB7-458C-9D0F-74D07938AF87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5BB7BA2-0CB7-458C-9D0F-74D07938AF87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5BB7BA2-0CB7-458C-9D0F-74D07938AF87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
