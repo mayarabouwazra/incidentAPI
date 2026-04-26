@@ -142,6 +142,64 @@ namespace AppTest
             var data = Assert.IsAssignableFrom<List<Incident>>(okResult.Value);
             Assert.Single(data);
         }
+        [Fact]
+        public async Task PostIncident_MissingTitle_ReturnsBadRequest()
+        {
+            var context = GetDbContext();
+            var controller = new IncidentsDbController(context);
+            var incident = new Incident
+            {
+                Status = "OPEN",
+                Severity = "HIGH"
+            };
+            controller.ModelState.AddModelError("Title", "Required");
+            var result = await controller.PostIncident(incident);
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Theory]
+        [InlineData("Low")]
+        [InlineData("Medium")]
+        [InlineData("High")]
+        [InlineData("Critical")]
+        public async Task PostIncident_ValidSeverity_ReturnsCreated(string severity)
+        {
+            var context = GetDbContext();
+            var controller = new IncidentsDbController(context);
+            var incident = new Incident
+            {
+                Title = "Test",
+                Status = "OPEN",
+                Severity = severity
+            };
+            var result = await controller.PostIncident(incident);
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+            var createdIncident = Assert.IsType<Incident>(createdResult.Value);
+            Assert.Equal(severity, createdIncident.Severity);
+        }
+
+        [Theory]
+        [InlineData("Abc")]
+        [InlineData("Azerty")]
+        [InlineData("123")]
+        [InlineData("")]
+        public async Task PostIncident_InvalidSeverity_ReturnsBadRequest(string severity)
+        {
+            var context = GetDbContext();
+            var controller = new IncidentsDbController(context);
+            var incident = new Incident
+            {
+                Title = "Test",
+                Status = "OPEN",
+                Severity = severity
+            };
+            controller.ModelState.AddModelError("Severity", "Invalid severity");
+            var result = await controller.PostIncident(incident);
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
 
     }
+
+
 }
