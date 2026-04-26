@@ -41,6 +41,28 @@ namespace AppTest
 
             Assert.Equal(2, incidents.Count);
         }
+        [Fact]
+        public async Task GetIncident_ExistingId_ReturnsIncident()
+        {
+            var context = GetDbContext();
+
+            var incident = new Incident
+            {
+                Id = 1,
+                Title = "Test",
+                Status = "OPEN"
+            };
+
+            context.Incidents.Add(incident);
+            context.SaveChanges();
+
+            var controller = new IncidentsDbController(context);
+
+            var result = await controller.GetIncident(1);
+
+            Assert.NotNull(result.Value);
+            Assert.Equal("Test", result.Value.Title);
+        }
 
     }
 }
