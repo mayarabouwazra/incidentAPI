@@ -15,6 +15,8 @@ namespace IncidentAPI_MayaraBouazra.Models
         public string Description { get; set; }
 
         [Required]
+
+        [RegularExpression("LOW|MEDIUM|HIGH|CRITICAL", ErrorMessage = "Invalid severity")]
         public string Severity { get; set; }
 
         [Required]

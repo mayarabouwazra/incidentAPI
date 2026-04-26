@@ -41,6 +41,10 @@ namespace IncidentAPI_X.Controllers
         [HttpPost]
         public async Task<ActionResult<Incident>> PostIncident(Incident incident)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             if (!AllowedSeverities.Contains(incident.Severity))
                 return BadRequest("Invalid severity");
 
