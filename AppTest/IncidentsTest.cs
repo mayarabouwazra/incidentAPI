@@ -11,6 +11,7 @@ using IncidentAPI_X.Controllers;
 
 namespace AppTest
 {
+    [Trait("Category", "Unit")]
     public class IncidentsTest
     {
         private IncidentsDbContext GetDbContext()

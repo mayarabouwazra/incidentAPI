@@ -8,6 +8,7 @@ using IncidentAPI_MayaraBouazra.Models;
 
 namespace AppTest
 {
+    [Trait("Category", "Integration")]
     public class IncidentsIntegrationTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly HttpClient _client;
