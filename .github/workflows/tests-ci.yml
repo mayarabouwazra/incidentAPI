@@ -23,7 +23,7 @@ jobs:
       run: dotnet restore
 
     - name: Build project
-      run: dotnet build --no-restore
+      run: dotnet build WebAPI\IncidentAPI_MayaraBouazra\IncidentAPI_MayaraBouazra.sln --no-restore
 
     - name: Run tests
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test WebAPI\IncidentAPI_MayaraBouazra\IncidentAPI_MayaraBouazra.sln --no-build --verbosity normal
