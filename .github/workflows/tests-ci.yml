@@ -8,7 +8,16 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    services:
+        sqlserver:
+            image: mcr.microsoft.com/mssql/server:2022-latest
+            env:
+                ACCEPT_EULA: "Y"
+                SA_PASSWORD: "My_password123"
+                ports:
+                     1433:1433
+                    
 
     steps:
     - name: Checkout code
@@ -28,6 +37,8 @@ jobs:
       shell: pwsh
 
     - name: Run tests
+      env : 
+            ConnectionStrings__IncidentsConnection: "Server=localhost,1433;Database=IncidentsDb;User Id=sa;Password=My_password123;TrustServerCertificate=True;"
       run: dotnet test (Get-ChildItem -Recurse -Filter "*.sln" | Select-Object -First 1).FullName --no-build --verbosity normal --logger "trx;LogFileName=TestResults.trx"
       shell: pwsh
 

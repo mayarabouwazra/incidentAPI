@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AppTest
@@ -12,7 +13,7 @@ namespace AppTest
         {
             builder.UseEnvironment("Testing");
 
-            builder.ConfigureServices(services =>
+            builder.ConfigureServices((context, services) =>
             {
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<IncidentsDbContext>));
@@ -20,10 +21,13 @@ namespace AppTest
                 if (descriptor != null)
                     services.Remove(descriptor);
 
+                var configuration = context.Configuration;
+
+                var connectionString =
+                    configuration.GetConnectionString("IncidentsConnection");
+
                 services.AddDbContext<IncidentsDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("TestDb");
-                });
+                    options.UseSqlServer(connectionString));
 
                 var sp = services.BuildServiceProvider();
 
