@@ -20,10 +20,13 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore WebAPI\IncidentAPI_MayaraBouazra\IncidentAPI_MayaraBouazra.sln
+      run: dotnet restore (Get-ChildItem -Recurse -Filter "*.sln" | Select-Object -First 1).FullName
+      shell: pwsh
 
     - name: Build project
-      run: dotnet build WebAPI\IncidentAPI_MayaraBouazra\IncidentAPI_MayaraBouazra.sln --no-restore
+      run: dotnet build (Get-ChildItem -Recurse -Filter "*.sln" | Select-Object -First 1).FullName --no-restore
+      shell: pwsh
 
     - name: Run tests
-      run: dotnet test WebAPI\IncidentAPI_MayaraBouazra\IncidentAPI_MayaraBouazra.sln --no-build --verbosity normal
+      run: dotnet test (Get-ChildItem -Recurse -Filter "*.sln" | Select-Object -First 1).FullName --no-build --verbosity normal
+      shell: pwsh
